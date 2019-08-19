@@ -1,24 +1,23 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import * as algoliasearch from "algoliasearch";
 
 function App() {
+  const apiCall = query => {
+    const client = algoliasearch("latency", "6be0576ff61c053d5f9a3225e2a90f76");
+    const index = client.initIndex("ikea");
+    const hits = index
+      .search("ikea", {
+        query: query,
+        hitsPerPage: 16,
+        attributesToRetrieve: ["name", "objectID", "image"]
+      })
+      .then(res => console.log(res));
+  };
+  apiCall("cheese");
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h2>Swarovsky Code Challenge</h2>
     </div>
   );
 }
