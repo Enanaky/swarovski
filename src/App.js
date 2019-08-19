@@ -13,11 +13,19 @@ function App() {
       })
       .then(res => console.log(res));
   };
-  apiCall("cheese");
 
   return (
     <div className="App">
       <h2>Swarovsky Code Challenge</h2>
+      <div className="container">
+        <div className="input-field">
+          <input
+            type="text"
+            placeholder="Enter query"
+            onChange={e => apiCall(e.target.value)}
+          />
+        </div>
+      </div>
     </div>
   );
 }
