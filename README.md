@@ -1,3 +1,41 @@
+#   Please have a look at the output of this API:
+
+ 
+
+curl 'https://latency-dsn.algolia.net/1/indexes/*/queries?x-algolia-api-key=6be0576ff61c053d5f9a3225e2a90f76&x-algolia-application-id=latency' --data '{"requests":[{"indexName":"ikea","params":"query=cheese&hitsPerPage=16"}]}'
+
+ 
+
+It returns a list of products based on the query parameter (cheese in this example). In results.hits you get a list of products.
+
+ 
+
+Please create the following JavaScript application:
+
+ 
+
+* On the top we have a text input field which takes the query param.
+
+* Below that we display a list or grid of products with their image and name
+
+* When I type in the search field, the following should happen
+
+* After there is a change in the field, wait for 200ms
+
+* If there is another change in that timeframe, reset the time counter and start it again
+
+* If there are no more changes in the timeframe, fire off an Ajax call to load the data (with the text from the field as query param)
+
+* If the input changes again during the runtime of the Ajax call, cancel it. Go to step 1 (i.e. Wait for 200ms etc)
+
+ 
+
+I am totally fine with unstyled html. You may use whatever library you wish. Structure your code in a way that it is easy to follow.
+
+ 
+
+Use chrome devtools to simulate slow browsers as the API is quite fast.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
