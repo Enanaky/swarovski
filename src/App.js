@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import * as algoliasearch from "algoliasearch";
 import { debounce } from "lodash";
+import axios from "axios";
 
 function App() {
   // Storage for Hits.
@@ -9,37 +9,50 @@ function App() {
   const [visible, setVisible] = useState(false);
   const [howMany, setHowMany] = useState(16);
   const [delay, setDelay] = useState(200);
-  // Save loading state and errors.
-  const [loading, setLoading] = useState(false);
+  // Save loading state.
   const [error, setError] = useState(null);
 
+  let CancelToken = axios.CancelToken;
+  let cancel;
+
+  // Normally I put the services in a diferent module, but this is a small SPA.
   const apiCall = query => {
-    const client = algoliasearch("latency", "6be0576ff61c053d5f9a3225e2a90f76");
-    const index = client.initIndex("ikea");
-    setLoading(true);
-    const hits = index.search("ikea", {
-      query: query,
-      hitsPerPage: howMany,
-      attributesToRetrieve: ["name", "objectID", "image"]
-    });
+    const algoliaAgent = "Algolia%20for%20JavaScript%20(3.33.0)%3B%20Browser";
+    const algoliaApiKey = "6be0576ff61c053d5f9a3225e2a90f76";
+    const params = `query=ikea&query=${query}&hitsPerPage=${howMany}&attributesToRetrieve=%5B%22name%22%2C%22objectID%22%2C%22image%22%5D`;
+    const url = `https://latency-dsn.algolia.net/1/indexes/ikea/query?x-algolia-agent=${algoliaAgent}&x-algolia-application-id=latency&x-algolia-api-key=${algoliaApiKey}`;
+
+    const hits = axios.post(
+      url,
+      { params: params },
+      { cancelToken: new CancelToken(c => (cancel = c)) }
+    );
+
     return hits;
   };
 
-  // Debounce(func, delay) apply the debounce effect every time "getData" is called.
+  // Debounce(func(), delay) apply the debounce effect every time "getData" is called.
   const getData = debounce(async function(query) {
-    setError(null);
     if (query === "") {
       setItems([]);
     } else {
       try {
-        //1. Making the ajax call.
+        //1 Delete previous errors.
+        setError(null);
+        //2 Cancel pending responses.
+        if (cancel !== undefined) {
+          cancel("The request has been canceled by the user");
+        }
+        //3 Make the ajax call and save the response in data.
         const data = await apiCall(query);
-        setLoading(false);
-        //2. Store the data on state.
-        setItems(data.hits);
+        //4 Store the data on state.
+        setItems(data.data.hits);
       } catch (err) {
-        setError(err);
-        console.log(err.debugData);
+        if (axios.isCancel(err)) {
+          setError(err.message);
+        } else {
+          setError(err);
+        }
       }
     }
   }, delay);
@@ -78,7 +91,6 @@ function App() {
             Default: 200.ms
           </div>
         ) : null}
-        {loading === true ? <p className="loading">loading...</p> : null}
         {error !== null ? <p className="error">{error}</p> : null}
         <ul className="list-items">
           {items &&
