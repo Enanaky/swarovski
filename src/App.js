@@ -13,6 +13,9 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  let CancelToken = axios.CancelToken;
+  let cancel;
+
   // Normally I put the services in a diferent module, but this is a small SPA.
   const apiCall = query => {
     const algoliaAgent = "Algolia%20for%20JavaScript%20(3.33.0)%3B%20Browser";
@@ -21,10 +24,22 @@ function App() {
     const url = `https://latency-dsn.algolia.net/1/indexes/ikea/query?x-algolia-agent=${algoliaAgent}&x-algolia-application-id=latency&x-algolia-api-key=${algoliaApiKey}`;
 
     const hits = axios
-      .post(url, {
-        params: params
-      })
-      .catch(error => setError(error));
+      .post(
+        url,
+        {
+          params: params
+        },
+        {
+          cancelToken: new CancelToken(function executor(c) {
+            cancel = c;
+          })
+        }
+      )
+      .catch(error => {
+        const result = error.message;
+        console.log(result);
+        return Promise.reject(result);
+      });
 
     return hits;
   };
@@ -36,14 +51,17 @@ function App() {
       setItems([]);
     } else {
       try {
-        //1. Making the ajax call.
+        //1. Cancel pending responses.
+        if (cancel !== undefined) {
+          cancel("Request canceled by the user");
+        }
+        //2. Make the ajax call and save the response in data.
         const data = await apiCall(query);
         setLoading(false);
-        //2. Store the data on state.
+        //3. Store the data on state.
         setItems(data.data.hits);
       } catch (err) {
-        setError(err);
-        console.log(err.debugData);
+        //handle err
       }
     }
   }, delay);
