@@ -9,8 +9,7 @@ function App() {
   const [visible, setVisible] = useState(false);
   const [howMany, setHowMany] = useState(16);
   const [delay, setDelay] = useState(200);
-  // Save loading state and errors.
-  const [loading, setLoading] = useState(false);
+  // Save loading state.
   const [error, setError] = useState(null);
 
   let CancelToken = axios.CancelToken;
@@ -23,45 +22,37 @@ function App() {
     const params = `query=ikea&query=${query}&hitsPerPage=${howMany}&attributesToRetrieve=%5B%22name%22%2C%22objectID%22%2C%22image%22%5D`;
     const url = `https://latency-dsn.algolia.net/1/indexes/ikea/query?x-algolia-agent=${algoliaAgent}&x-algolia-application-id=latency&x-algolia-api-key=${algoliaApiKey}`;
 
-    const hits = axios
-      .post(
-        url,
-        {
-          params: params
-        },
-        {
-          cancelToken: new CancelToken(function executor(c) {
-            cancel = c;
-          })
-        }
-      )
-      .catch(error => {
-        const result = error.message;
-        console.log(result);
-        return Promise.reject(result);
-      });
+    const hits = axios.post(
+      url,
+      { params: params },
+      { cancelToken: new CancelToken(c => (cancel = c)) }
+    );
 
     return hits;
   };
 
   // Debounce(func(), delay) apply the debounce effect every time "getData" is called.
   const getData = debounce(async function(query) {
-    setError(null);
     if (query === "") {
       setItems([]);
     } else {
       try {
-        //1. Cancel pending responses.
+        //1 Delete previous errors.
+        setError(null);
+        //2 Cancel pending responses.
         if (cancel !== undefined) {
-          cancel("Request canceled by the user");
+          cancel("The request has been canceled by the user");
         }
-        //2. Make the ajax call and save the response in data.
+        //3 Make the ajax call and save the response in data.
         const data = await apiCall(query);
-        setLoading(false);
-        //3. Store the data on state.
+        //4 Store the data on state.
         setItems(data.data.hits);
       } catch (err) {
-        //handle err
+        if (axios.isCancel(err)) {
+          setError(err.message);
+        } else {
+          setError(err);
+        }
       }
     }
   }, delay);
@@ -100,7 +91,6 @@ function App() {
             Default: 200.ms
           </div>
         ) : null}
-        {loading === true ? <p className="loading">loading...</p> : null}
         {error !== null ? <p className="error">{error}</p> : null}
         <ul className="list-items">
           {items &&
