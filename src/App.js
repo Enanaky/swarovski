@@ -63,7 +63,7 @@ function App() {
 
   return (
     <div className="App">
-      <h2>Swarovsky Code Challenge</h2>
+      <h2>Swarovski Code Challenge</h2>
       <div className="container">
         <div className="input-field">
           <input
