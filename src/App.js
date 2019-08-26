@@ -11,6 +11,7 @@ function App() {
   const [delay, setDelay] = useState(200);
   // Save loading state.
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   let CancelToken = axios.CancelToken;
   let cancel;
@@ -36,6 +37,7 @@ function App() {
     if (query === "") {
       setItems([]);
     } else {
+      setLoading(true);
       try {
         //1 Delete previous errors.
         setError(null);
@@ -46,6 +48,7 @@ function App() {
         //3 Make the ajax call and save the response in data.
         const data = await apiCall(query);
         //4 Store the data on state.
+        setLoading(false);
         setItems(data.data.hits);
       } catch (err) {
         if (axios.isCancel(err)) {
@@ -77,18 +80,24 @@ function App() {
         </div>
         {visible === true ? (
           <div className="show-hide">
-            Default: 16
+            Product per page:
             <input
-              type="text"
-              placeholder="Hits per page"
+              type="number"
+              min="1"
+              placeholder="16"
               onChange={e => setHowMany(e.target.value)}
             />
+            Delay on search:
             <input
-              type="text"
-              placeholder="Delay on search"
+              type="number"
+              placeholder="200ms"
               onChange={e => setDelay(e.target.value)}
             />
-            Default: 200.ms
+          </div>
+        ) : null}
+        {loading === true ? (
+          <div className="loading">
+            <strong>Loading...</strong>
           </div>
         ) : null}
         {error !== null ? <p className="error">{error}</p> : null}
