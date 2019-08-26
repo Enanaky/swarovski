@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/swarovski/static/css/main.d1aa59cb.chunk.css",
+    "main.js": "/swarovski/static/js/main.6bcf2cfa.chunk.js",
+    "main.js.map": "/swarovski/static/js/main.6bcf2cfa.chunk.js.map",
+    "runtime~main.js": "/swarovski/static/js/runtime~main.c7b59218.js",
+    "runtime~main.js.map": "/swarovski/static/js/runtime~main.c7b59218.js.map",
+    "static/js/2.cb2fa9f2.chunk.js": "/swarovski/static/js/2.cb2fa9f2.chunk.js",
+    "static/js/2.cb2fa9f2.chunk.js.map": "/swarovski/static/js/2.cb2fa9f2.chunk.js.map",
+    "index.html": "/swarovski/index.html",
+    "precache-manifest.c8ee5e980a4aedaa04cb8b43d1321a1b.js": "/swarovski/precache-manifest.c8ee5e980a4aedaa04cb8b43d1321a1b.js",
+    "service-worker.js": "/swarovski/service-worker.js",
+    "static/css/main.d1aa59cb.chunk.css.map": "/swarovski/static/css/main.d1aa59cb.chunk.css.map"
+  }
+}
