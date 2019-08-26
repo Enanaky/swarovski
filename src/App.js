@@ -106,7 +106,7 @@ function App() {
             items.map(hit => {
               return (
                 <li key={hit.objectID} className="card">
-                  <img src={hit.image} className="card-img" alt="..." />
+                  <img src={hit.image} className="card-img" alt={hit.name} />
                   <div className="card-body">
                     <p className="card-text">{hit.name}</p>
                   </div>
